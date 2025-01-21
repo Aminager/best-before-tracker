@@ -35,5 +35,22 @@ def submit_barcode():
         return {"message": "No barcode provided"}, 400
 
 
+@app.route("/details", methods=["POST"])
+def get_details():
+    data = request.get_json()
+    barcode = data.get("barcode") if data else None
+    if barcode:
+        API_URL = "https://productsearch.gs1.se/foodservice/tradeItem/"
+        response = requests.get(API_URL + barcode)
+        if response.status_code == 200:
+            return response.json(), 200
+        else:
+            return {
+                "message": "Error fetching details from external API"
+            }, response.status_code
+    else:
+        return {"message": "No barcode provided"}, 400
+
+
 if __name__ == "__main__":
     app.run()
